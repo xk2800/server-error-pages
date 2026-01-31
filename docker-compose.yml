@@ -1,0 +1,22 @@
+version: "3.8"
+services:
+  error-pages:
+    image: nginx:alpine
+    # This copies your local 404.html into the container when it starts
+    volumes:
+      - ./404.html:/usr/share/nginx/html/index.html
+    networks:
+      - dokploy-network
+    labels:
+      - "traefik.enable=true"
+      # The Catch-All Rule (Matches everything)
+      - "traefik.http.routers.catchall.rule=PathPrefix(`/`)"
+      # Low Priority (So it doesn't block your real apps)
+      - "traefik.http.routers.catchall.priority=1"
+      - "traefik.http.routers.catchall.entrypoints=web,websecure"
+      - "traefik.http.routers.catchall.tls=true"
+      - "traefik.http.services.error-pages.loadbalancer.server.port=80"
+
+networks:
+  dokploy-network:
+    external: true
