@@ -1,17 +1,15 @@
 version: "3.8"
 services:
   error-pages:
-    image: nginx:alpine
-    # This copies your local 404.html into the container when it starts
-    volumes:
-      - ./404.html:/usr/share/nginx/html/index.html
+    # BUILD tells Docker: "Look in this folder and use the Dockerfile"
+    build: .
     networks:
       - dokploy-network
     labels:
       - "traefik.enable=true"
-      # The Catch-All Rule (Matches everything)
+      # The Catch-All Rule
       - "traefik.http.routers.catchall.rule=PathPrefix(`/`)"
-      # Low Priority (So it doesn't block your real apps)
+      # Low Priority (So it doesn't block real apps)
       - "traefik.http.routers.catchall.priority=1"
       - "traefik.http.routers.catchall.entrypoints=web,websecure"
       - "traefik.http.routers.catchall.tls=true"
